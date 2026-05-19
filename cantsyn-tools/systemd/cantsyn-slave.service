@@ -1,0 +1,17 @@
+[Unit]
+Description=CanTSyn slave — receive AUTOSAR SYNC+FUP and log corrected time
+Documentation=https://github.com/awto-au/awto-autosar-rs
+After=network.target
+BindsTo=sys-subsystem-net-devices-can0.device
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/cantsyn-slave can0 700
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=cantsyn-slave
+
+[Install]
+WantedBy=multi-user.target

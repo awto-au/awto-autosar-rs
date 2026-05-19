@@ -1,0 +1,20 @@
+[Unit]
+Description=CanTSyn master — AUTOSAR time sync SYNC+FUP broadcast
+Documentation=https://github.com/awto-au/awto-autosar-rs
+After=network.target
+# Wait for the CAN interface to be up before starting.
+# If using a USB-CAN adapter, add: After=sys-subsystem-net-devices-can0.device
+BindsTo=sys-subsystem-net-devices-can0.device
+
+[Service]
+Type=simple
+# Adjust path to the installed binary or use the full repo path during dev:
+ExecStart=/usr/local/bin/cantsyn-master can0 1000 700
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=cantsyn-master
+
+[Install]
+WantedBy=multi-user.target

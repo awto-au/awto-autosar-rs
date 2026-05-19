@@ -1,8 +1,12 @@
 //! cantsyn-master — transmit AUTOSAR CanTSyn SYNC+FUP pairs on a SocketCAN interface.
 //!
-//! Usage:  cantsyn-master [IFACE] [INTERVAL_MS]
+//! Usage:  cantsyn-master [IFACE [INTERVAL_MS [CAN_ID_HEX]]]
 //!   IFACE       CAN interface name (default: can0)
 //!   INTERVAL_MS SYNC transmit interval in ms (default: 1000)
+//!   CAN_ID_HEX  CAN frame ID in hex without 0x prefix (default: 700)
+//!
+//! 0x700 is chosen as default — clear of all AWTO L8 HTC IDs (max 0x500)
+//! and the Dingo range (0x5FF-0x61E).
 //!
 //! The master sends SYNC immediately, records the actual TX instant, then
 //! sends FUP carrying the nanosecond correction.  Time source is CLOCK_REALTIME.
@@ -11,10 +15,6 @@ use std::{env, time::{Duration, Instant, SystemTime, UNIX_EPOCH}};
 use can_driver::{CanDriver, CanFrame};
 use can_driver::socketcan_driver::SocketcanDriver;
 use cantsyn::{Master, Timestamp};
-
-/// CAN ID used by this node for CanTSyn frames.  Configurable via OD in a
-/// full AUTOSAR stack; hardcoded here for the demo.
-const CANTSYN_CAN_ID: u32 = 0x640;
 
 fn now_ts() -> Timestamp {
     let d = SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default();
@@ -27,6 +27,9 @@ fn main() {
     let interval = args.get(2)
         .and_then(|s| s.parse::<u64>().ok())
         .unwrap_or(1000);
+    let can_id: u32 = args.get(3)
+        .and_then(|s| u32::from_str_radix(s, 16).ok())
+        .unwrap_or(0x700);
 
     let mut drv = SocketcanDriver::open(iface)
         .unwrap_or_else(|e| { eprintln!("open {iface}: {e}"); std::process::exit(1) });
@@ -34,14 +37,14 @@ fn main() {
     let mut master = Master::new(0, false);
     let period = Duration::from_millis(interval);
 
-    println!("cantsyn-master on {iface}, interval={interval}ms, CAN-ID=0x{CANTSYN_CAN_ID:03X}");
+    println!("cantsyn-master on {iface}, interval={interval}ms, CAN-ID=0x{can_id:03X}");
 
     loop {
         let t_before = now_ts();
         let sync_pdu = master.build_sync(t_before);
         let tx_start = Instant::now();
 
-        if let Err(e) = drv.send(&CanFrame::new(CANTSYN_CAN_ID, &sync_pdu.0)) {
+        if let Err(e) = drv.send(&CanFrame::new(can_id, &sync_pdu.0)) {
             eprintln!("SYNC send error: {e:?}");
         } else {
             // Record actual TX time — in a real system this comes from the CAN
@@ -54,7 +57,7 @@ fn main() {
             );
 
             if let Some(fup_pdu) = master.build_fup(actual_tx) {
-                if let Err(e) = drv.send(&CanFrame::new(CANTSYN_CAN_ID, &fup_pdu.0)) {
+                if let Err(e) = drv.send(&CanFrame::new(can_id, &fup_pdu.0)) {
                     eprintln!("FUP send error: {e:?}");
                 } else {
                     println!(
