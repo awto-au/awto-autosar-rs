@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "cantsyn",
+    "canopen-time",
+]
+resolver = "2"

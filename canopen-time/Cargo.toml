@@ -1,0 +1,11 @@
+[package]
+name = "canopen-time"
+version = "0.1.0"
+edition = "2021"
+description = "CANopen TIME object (DS301) — 6-byte ms-since-midnight + days-since-1984, producer and consumer"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/awto-au/awto-autosar-rs"
+keywords = ["can", "canopen", "time", "embedded", "no_std"]
+categories = ["embedded", "no-std"]
+
+[dependencies]

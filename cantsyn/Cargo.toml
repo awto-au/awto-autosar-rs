@@ -1,0 +1,15 @@
+[package]
+name = "cantsyn"
+version = "0.1.0"
+edition = "2021"
+description = "AUTOSAR CanTSyn — Time Sync over CAN (SYNC/FOLLOW_UP, sequence counter, CRC8H2F)"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/awto-au/awto-autosar-rs"
+keywords = ["can", "autosar", "time-sync", "embedded", "no_std"]
+categories = ["embedded", "no-std"]
+
+[dependencies]
+
+[features]
+default = []
+crc = []   # enable CRC8H2F validation (requires crc crate — add when needed)
