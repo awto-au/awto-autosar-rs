@@ -1,0 +1,22 @@
+[package]
+name = "cantsyn-tools"
+version = "0.1.0"
+edition = "2021"
+description = "Linux CLI tools: cantsyn-master and cantsyn-slave over SocketCAN"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/awto-au/awto-autosar-rs"
+
+[[bin]]
+name = "cantsyn-master"
+path = "src/bin/master.rs"
+
+[[bin]]
+name = "cantsyn-slave"
+path = "src/bin/slave.rs"
+
+[dependencies]
+can-driver = { path = "../can-driver", features = ["socketcan"] }
+cantsyn    = { path = "../cantsyn" }
+
+[dependencies.socketcan]
+version = "3"

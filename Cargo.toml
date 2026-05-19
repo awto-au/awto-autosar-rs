@@ -2,5 +2,7 @@
 members = [
     "cantsyn",
     "canopen-time",
+    "can-driver",
+    "cantsyn-tools",
 ]
 resolver = "2"

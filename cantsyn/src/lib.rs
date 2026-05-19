@@ -217,7 +217,7 @@ impl Slave {
             return Err(SlaveError::DomainMismatch);
         }
         match self.state {
-            SlaveState::WaitingFup { seq, sync_seconds, rx_time } => {
+            SlaveState::WaitingFup { seq, sync_seconds, rx_time: _ } => {
                 if pdu.seq_ctr() != seq {
                     self.state = SlaveState::Idle;
                     return Err(SlaveError::UnexpectedFup);

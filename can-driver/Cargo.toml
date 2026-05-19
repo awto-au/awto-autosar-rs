@@ -1,0 +1,16 @@
+[package]
+name = "can-driver"
+version = "0.1.0"
+edition = "2021"
+description = "Abstract CAN frame I/O trait + LoopbackDriver (no_std) and SocketcanDriver (Linux)"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/awto-au/awto-autosar-rs"
+keywords = ["can", "embedded", "socketcan", "no_std", "driver"]
+categories = ["embedded", "no-std"]
+
+[dependencies]
+socketcan = { version = "3", optional = true }
+
+[features]
+default = []
+socketcan = ["dep:socketcan"]
