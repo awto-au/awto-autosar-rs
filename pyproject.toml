@@ -1,0 +1,13 @@
+[project]
+name = "awto-autosar-rs-tests"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "python-can>=4.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

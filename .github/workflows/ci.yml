@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  rust:
+    name: Rust tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test --workspace
+
+  python:
+    name: Python frame tests (vcan0)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build cantsyn-master release binary
+        run: cargo build --release --package cantsyn-tools
+
+      - name: Set up vcan0
+        run: |
+          sudo modprobe vcan
+          sudo ip link add vcan0 type vcan
+          sudo ip link set vcan0 up
+
+      - name: Install python-can
+        run: pip install python-can pytest
+
+      - name: Run frame tests
+        run: pytest tests/test_cantsyn_frames.py -v
